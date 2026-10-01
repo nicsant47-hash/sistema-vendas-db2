@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes do Pedido</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Detalhes do Pedido <span th:text="'#' + ${pedido.id}"></span></h1>
+
+    <table class="table table-bordered">
+        <tr>
+            <th style="width: 200px">Cliente</th>
+            <td th:text="${pedido.cliente.nome}"></td>
+        </tr>
+        <tr>
+            <th>CPF</th>
+            <td th:text="${pedido.cliente.cpf}"></td>
+        </tr>
+        <tr>
+            <th>Data</th>
+            <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>
+                <span class="badge"
+                      th:classappend="${pedido.status.name() == 'ATIVO'} ? 'bg-success' : 'bg-secondary'"
+                      th:text="${pedido.status}"></span>
+            </td>
+        </tr>
+        <tr>
+            <th>Versão</th>
+            <td th:text="${pedido.version}"></td>
+        </tr>
+    </table>
+
+    <h4>Itens</h4>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Preço Unitário</th>
+            <th>Subtotal</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${pedido.itens}">
+            <td th:text="${item.produto.nome}"></td>
+            <td th:text="${item.quantidade}"></td>
+            <td th:text="${'R$ ' + #numbers.formatDecimal(item.precoUnitario, 1, 'POINT', 2, 'COMMA')}"></td>
+            <td th:text="${'R$ ' + #numbers.formatDecimal(item.subtotal, 1, 'POINT', 2, 'COMMA')}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(pedido.itens)}">
+            <td colspan="4" class="text-center text-muted">Nenhum item no pedido.</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <th colspan="3" class="text-end">Total</th>
+            <th th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 2, 'COMMA')}"></th>
+        </tr>
+        </tfoot>
+    </table>
+
+    <a class="btn btn-warning" th:if="${pedido.status.name() == 'ATIVO'}"
+       th:href="@{/pedidos/edit/{id}(id=${pedido.id})}">Editar</a>
+    <a class="btn btn-danger" th:if="${pedido.status.name() == 'ATIVO'}"
+       th:href="@{/pedidos/cancelar/{id}(id=${pedido.id})}">Cancelar Pedido</a>
+    <a class="btn btn-secondary" th:href="@{/pedidos}">Voltar</a>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cancelar Pedido</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Cancelar Pedido</h1>
+
+    <div class="alert alert-danger" th:if="${pedido.status.name() == 'ATIVO'}">
+        <p class="mb-0">Tem certeza que deseja cancelar o pedido
+            <strong th:text="'#' + ${pedido.id}"></strong> do cliente
+            <strong th:text="${pedido.cliente.nome}"></strong>?
+            Os produtos dos itens serão devolvidos ao estoque.</p>
+    </div>
+    <div class="alert alert-secondary" th:unless="${pedido.status.name() == 'ATIVO'}">
+        Este pedido já está cancelado.
+    </div>
+
+    <table class="table table-bordered">
+        <tr>
+            <th style="width: 200px">Valor Total</th>
+            <td th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+        </tr>
+        <tr>
+            <th>Itens</th>
+            <td>
+                <ul class="mb-0">
+                    <li th:each="item : ${pedido.itens}"
+                        th:text="${item.quantidade + ' x ' + item.produto.nome}"></li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <form th:action="@{/pedidos/cancelar/{id}(id=${pedido.id})}" method="post">
+        <button type="submit" class="btn btn-danger" th:if="${pedido.status.name() == 'ATIVO'}">Confirmar Cancelamento</button>
+        <a th:href="@{/pedidos}" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
